@@ -16,9 +16,11 @@ public class LocalizeManager {
 
     private final Map<Location, Map<String, String>> localizedMap = new HashMap<>();
 
+    private Location currentLocation = Location.EN_US;
+
     public LocalizeManager() {
-        locationMap.put(Location.EN_US.getLocateName(), Location.EN_US);
-        locationMap.put(Location.JA_JP.getLocateName(), Location.JA_JP);
+        addLocation(Location.EN_US.getLocateName(), Location.EN_US);
+        addLocation(Location.JA_JP.getLocateName(), Location.JA_JP);
     }
 
     public Location getLocation(String name) {
@@ -44,18 +46,45 @@ public class LocalizeManager {
         return locationMap.containsValue(location);
     }
 
-    public void addLocalizedText(Location location, String unLocalizedText, String localizeText) {
+    public void addLocalizedText(Location location, String unLocalizedText, String localizeText)
+            throws LocalizeException {
         if (location == null || unLocalizedText == null || localizeText == null ||
                 unLocalizedText.isEmpty() || localizeText.isEmpty()) {
             throw new LocalizeException("Parameter error");
         } else if (!this.isRegisteredLocation(location)) {
-            throw new LocalizeException("Ths location is not registered : " + location.getLocateName());
+            throw new LocalizeException("This location is not registered : " + location.getLocateName());
         } else {
             localizedMap.get(location).put(unLocalizedText, localizeText);
         }
     }
 
     public String getLocalizedText(Location location, String unLocalizedText) {
+
         return localizedMap.get(location).get(unLocalizedText);
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Location location) throws LocalizeException{
+        if (!isRegisteredLocation(location)) {
+            throw new LocalizeException("This location is not registered : " + location.getLocateName());
+        } else if (location == null) {
+            throw new LocalizeException("Parameter error");
+        } else {
+            this.currentLocation = location;
+        }
+    }
+
+    public String getLocalizedTextWithCurrentLocation(String unLocalizedText)
+            throws NullPointerException, LocalizeException {
+        if (unLocalizedText == null) {
+            throw new NullPointerException("Null this parameter");
+        } else if (unLocalizedText.isEmpty()) {
+            throw new LocalizeException("Empty this parameter");
+        } else {
+            return localizedMap.get(currentLocation).get(unLocalizedText);
+        }
     }
 }
