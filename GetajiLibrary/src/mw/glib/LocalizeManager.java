@@ -19,21 +19,21 @@ public class LocalizeManager {
     private Location currentLocation = Location.EN_US;
 
     public LocalizeManager() {
-        addLocation(Location.EN_US.getLocateName(), Location.EN_US);
-        addLocation(Location.JA_JP.getLocateName(), Location.JA_JP);
+        addLocation(Location.EN_US);
+        addLocation(Location.JA_JP);
     }
 
     public Location getLocation(String name) {
         return locationMap.get(name);
     }
 
-    public void addLocation(String name, Location location) throws LocalizeException {
-        if (name == null || location == null || name.equals(location.getLocateName())) {
-            throw new LocalizeException("Parameter error");
+    public void addLocation(Location location) throws LocalizeException {
+        if (location == null) {
+            throw new LocalizeException("Parameter is null");
         } else if (locationMap.containsValue(location)) {
             throw new LocalizeException("Contains this location : " + location.getLocateName());
         } else {
-            locationMap.put(name, location);
+            locationMap.put(location.getLocateName(), location);
             localizedMap.put(location, new HashMap<String, String>());
         }
     }
@@ -50,7 +50,7 @@ public class LocalizeManager {
             throws LocalizeException {
         if (location == null || unLocalizedText == null || localizeText == null ||
                 unLocalizedText.isEmpty() || localizeText.isEmpty()) {
-            throw new LocalizeException("Parameter error");
+            throw new LocalizeException("Parameter is null or empty");
         } else if (!this.isRegisteredLocation(location)) {
             throw new LocalizeException("This location is not registered : " + location.getLocateName());
         } else {

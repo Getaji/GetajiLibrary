@@ -17,6 +17,6 @@ public class LocalizeException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return super.getMessage() + message;
+        return message;
     }
 }

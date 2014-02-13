@@ -1,11 +1,8 @@
 package mw.glib;
 
 /**
- * Created with IntelliJ IDEA.
- * User: user9
- * Date: 14/02/12
- * Time: 9:45
- * To change this template use File | Settings | File Templates.
+ * 地域を表すクラスです.<br />
+ * 地域名はすべて小文字で記されなければなりません.
  */
 public class Location {
 
@@ -17,8 +14,16 @@ public class Location {
 
     private final String locateName;
 
+    /**
+     * Locationインスタンスを新たに生成します.
+     * @param locateName 地域名はすべて小文字に変換して格納されます
+     */
     public Location(String locateName) {
-        this.locateName = locateName;
+        if (locateName == null || locateName.isEmpty()) {
+            throw new LocalizeException("Location is null or empty");
+        } else {
+            this.locateName = locateName.toLowerCase();
+        }
     }
 
     public String getLocateName() {
