@@ -26,6 +26,10 @@ public class Location {
         }
     }
 
+    /**
+     * 登録した地域名を返します.
+     * @return 地域名
+     */
     public String getLocateName() {
         return this.locateName;
     }

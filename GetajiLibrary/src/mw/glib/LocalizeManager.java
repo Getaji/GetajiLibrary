@@ -12,6 +12,10 @@ import java.util.Map;
  */
 public class LocalizeManager {
 
+    /**
+     * 地域名と地域をペアで所持するマップ.<br />
+     * 値の上書きは許可されている.
+     */
     private final Map<String, Location> locationMap = new HashMap<>();
 
     private final Map<Location, Map<String, String>> localizedMap = new HashMap<>();
