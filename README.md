@@ -19,3 +19,4 @@ GUIデザインパターンのひとつ、Model-View-Controllerを抽象化し�
 汎用クラス群です。
 * [Checker](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/Checker.java)
 * [EntryImpl](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/EntryImpl.java)
+* [Thrower](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/Thrower.java)
