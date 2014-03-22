@@ -3,10 +3,13 @@ package mw.glib;
 import java.util.Map;
 
 /**
- * {@link Map.Entry}の実装クラスです.<br />
- * 最低限の変数とメソッドを保持します.
+ * <p>{@link Map.Entry}の実装クラスです。
+ * 最低限の変数とメソッドを保持します。
+ *
  * @param <K> キー(不変)
  * @param <V> 値(可変)
+ * @since build001
+ * @author Getaji
  */
 public class EntryImpl<K, V> implements Map.Entry<K, V> {
 
@@ -23,17 +26,19 @@ public class EntryImpl<K, V> implements Map.Entry<K, V> {
     private V value;
 
     /**
-     * インスタンスを生成します.
-     * @param key キー これ以降は変更できない
+     * インスタンスを生成します。
+     * @param key キー
      * @param value 値
      */
     public EntryImpl(K key, V value) {
+        Checker.requireAndNonNull(key, value);
+
         this.key = key;
         this.value = value;
     }
 
     /**
-     * キーを返します.
+     * キーを返します。
      * @return キー
      */
     @Override
@@ -42,7 +47,7 @@ public class EntryImpl<K, V> implements Map.Entry<K, V> {
     }
 
     /**
-     * 値を返します.
+     * 値を返します。
      * @return 値
      */
     @Override
@@ -51,12 +56,14 @@ public class EntryImpl<K, V> implements Map.Entry<K, V> {
     }
 
     /**
-     * 値をセットします
+     * 値をセットします。
      * @param value 値
      * @return セット後の値
      */
     @Override
     public V setValue(V value) {
+        Checker.requireNonNull(value);
+
         return this.value = value;
     }
 }

@@ -1,7 +1,12 @@
 package mw.glib;
 
 /**
- * {@link LocalizeManager}, {@link Location}クラスの操作が不正だった場合にスローされる例外です.
+ * {@link LocalizeManager}・{@link Location}クラスの操作が不正だった場合にスローされる例外です。
+ *
+ * <p>このクラスはMW Localize Frameworkに属します。
+ *
+ * @since build001
+ * @author Getaji
  */
 public class LocalizeException extends RuntimeException {
 
@@ -15,6 +20,8 @@ public class LocalizeException extends RuntimeException {
      * @param message エラーの内容を表すメッセージ
      */
     LocalizeException(String message) {
+        Checker.requireNonNull(message);
+
         this.message = message;
     }
 
