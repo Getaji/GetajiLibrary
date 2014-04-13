@@ -13,9 +13,9 @@ public class Checker {
     private Checker() {}
 
     /**
-     * 渡されたオブジェクトが<tt>null</tt>であるかを返します.
+     * 渡されたオブジェクトが<tt>null</tt>であるかを返します。
      *
-     * @param obj オブジェクト
+     * @param obj 対象オブジェクト
      * @return <tt>null</tt>であるか
      */
     public static boolean isNull(Object obj) {
@@ -41,11 +41,11 @@ public class Checker {
     }
 
     /**
-     * 渡された単数～複数のオブジェクトの最低ひとつが<tt>null</tt>であるかを返します。
+     * 渡された単数～複数のオブジェクトの最低1つが<tt>null</tt>であるかを返します。
      * 何もパタメータが渡されなかった場合にも<tt>true</tt>を返します。
      *
      * @param objects 単数～複数のオブジェクト
-     * @return いずれかのオブジェクトが<tt>null</tt>であるか
+     * @return 最低1つのオブジェクトが<tt>null</tt>であるか
      */
     public static boolean orNull(Object... objects) {
         if (objects == null) {
@@ -59,35 +59,63 @@ public class Checker {
     }
 
     /**
-     * 渡されたオブジェクトが<tt>null</tt>の場合に指定されたオブジェクトを返します。
-     * <tt>null</tt>でなかった場合は<tt>null</tt>が返ります。
+     * 渡されたオブジェクトが<tt>null</tt>なら<tt>caseObject</tt>を返します。
+     * <tt>null</tt>でなかったなら<tt>null</tt>を返します。
      *
      * @param obj オブジェクト
      * @param caseObject <tt>null</tt>の場合に返すオブジェクト
-     * @param <T> 返すオブジェクトの型
-     * @return オブジェクトが<tt>null</tt>の場合に<tt>caseObject</tt>、そうでない場合に<tt>null</tt>
+     * @param <R> 返すオブジェクトの型
+     * @return オブジェクトが<tt>null</tt>なら<tt>caseObject</tt>、そうでないなら<tt>null</tt>
      */
-    public static <T> T caseNull(Object obj, T caseObject) {
-        return isNull(obj) ? caseObject : null;
+    public static <R> R caseNull(Object obj, R caseObject) {
+        return caseNull(obj, caseObject, null);
     }
 
     /**
-     * 渡されたオブジェクトが<tt>null</tt>でなかった場合に指定されたオブジェクトを返します。
-     * <tt>null</tt>の場合は<tt>null</tt>が返ります。
+     * 渡されたオブジェクトが<tt>null</tt>なら<tt>caseObject</tt>を返します。
+     * <tt>null</tt>でなかったなら<tt>nonNullObject</tt>を返します。
+     *
+     * @param obj オブジェクト
+     * @param caseObject <tt>null</tt>の場合に返すオブジェクト
+     * @param nonNullObject <tt>null</tt>でない場合に返すオブジェクト
+     * @param <R> 返すオブジェクトの型
+     * @return オブジェクトが<tt>null</tt>なら<tt>caseObject</tt>、そうでないなら<tt>null</tt>
+     */
+    public static <R> R caseNull(Object obj, R caseObject, R nonNullObject) {
+        return isNull(obj) ? caseObject : nonNullObject;
+    }
+
+    /**
+     * 渡されたオブジェクトが<tt>null</tt>でなかったなら<tt>caseObject</tt>を返します。
+     * <tt>null</tt>なら<tt>null</tt>が返ります。
      *
      * @param obj オブジェクト
      * @param caseObject <tt>null</tt>でなかった場合に返すオブジェクト
-     * @param <T> 返すオブジェクトの型
-     * @return オブジェクトが<tt>null</tt>でなかった場合に<tt>caseObject</tt>、nullの場合に<tt>null</tt>
+     * @param <R> 返すオブジェクトの型
+     * @return オブジェクトが<tt>null</tt>でなかったなら<tt>caseObject</tt>、<tt>null</tt>なら<tt>null</tt>
      */
-    public static <T> T caseNonNull(Object obj, T caseObject) {
-        return !isNull(obj) ? caseObject: null;
+    public static <R> R caseNonNull(Object obj, R caseObject) {
+        return caseNonNull(obj, caseObject, null);
     }
 
     /**
-     * 渡されたオブジェクトが<tt>null</tt>の場合に、
-     * <tt>NullPointerException</tt>をスローします。
-     * <tt>NullPointerException</tt>には何も渡されません。
+     * 渡されたオブジェクトが<tt>null</tt>でなかったなら<tt>caseObject</tt>を返します。
+     * <tt>null</tt>なら<tt>nullObject</tt>が返ります。
+     *
+     * @param obj オブジェクト
+     * @param caseObject <tt>null</tt>でなかった場合に返すオブジェクト
+     * @param nullObject <tt>null</tt>だった場合に返すオブジェクト
+     * @param <R> 返すオブジェクトの型
+     * @return オブジェクトが<tt>null</tt>でなかったなら<tt>caseObject</tt>、<tt>null</tt>なら<tt>null</tt>
+     */
+    public static <R> R caseNonNull(Object obj, R caseObject, R nullObject) {
+        return !isNull(obj) ? caseObject: nullObject;
+    }
+
+    /**
+     * 渡されたオブジェクトが<tt>null</tt>なら、
+     * {@link NullPointerException}をスローします。
+     * {@link NullPointerException}には何も渡されません。
      * 文字列を指定したい場合は、
      * {@link Checker#requireNonNull(Object, String)}を用いてください。
      *
@@ -101,11 +129,11 @@ public class Checker {
     }
 
     /**
-     * 渡されたオブジェクトが<tt>null</tt>の場合に、
-     * 渡された文字列を渡した<tt>NullPointerException</tt>をスローします。
+     * 渡されたオブジェクトが<tt>null</tt>なら、
+     * 受け取った文字列<tt>message</tt>を渡した{@link NullPointerException}をスローします。
      *
      * @param obj オブジェクト
-     * @param message <tt>NullPointerException</tt>に渡すオブジェクト
+     * @param message {@link NullPointerException}に渡す文字列
      * @throws NullPointerException オブジェクトが<tt>null</tt>の場合にスロー
      */
     public static void requireNonNull(Object obj, String message)
@@ -116,13 +144,13 @@ public class Checker {
     }
 
     /**
-     * <p>渡された単数～複数のオブジェクトのいずれかひとつでも<tt>null</tt>の場合に、
-     * <tt>NullPointerException</tt>をスローします。
+     * <p>渡された単数～複数のオブジェクトの最低1つが<tt>null</tt>なら、
+     * {@link NullPointerException}をスローします。
      *
      * <p>このメソッドはすべてのオブジェクトがnullでないことを保証するためのメソッドです。
      *
      * @param objects 単数～複数のオブジェクト
-     * @throws NullPointerException オブジェクトのいずれかが<tt>null</tt>の場合にスロー
+     * @throws NullPointerException オブジェクトの最低1つが<tt>null</tt>の場合にスロー
      */
     public static void requireAndNonNull(Object... objects)
             throws NullPointerException {
@@ -133,10 +161,10 @@ public class Checker {
     }
 
     /**
-     * <p>渡された単数～複数のオブジェクトがすべて<tt>null</tt>の場合に、
-     * <tt>NullPointerException</tt>をスローします。
+     * <p>渡された単数～複数のオブジェクトがすべて<tt>null</tt>なら、
+     * {@link NullPointerException}をスローします。
      *
-     * <p>このメソッドはオブジェクトが最低ひとつでもnullでないことを保証するためのメソッドです。
+     * <p>このメソッドはオブジェクトが最低ひとつでも<tt>null</tt>でないことを保証するためのメソッドです。
      *
      * @param objects 単数～複数のオブジェクト
      * @throws NullPointerException オブジェクトのすべてが<tt>null</tt>の場合にスロー
@@ -152,8 +180,8 @@ public class Checker {
     }
 
     /**
-     * 渡された単数～複数の真偽値がすべて<tt>true</tt>の場合に<tt>true</tt>を返します。
-     * 同時にNullチェックも行われます。
+     * 渡された単数～複数の真偽値がすべて<tt>true</tt>なら<tt>true</tt>を返します。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
      * @param booleans 単数～複数の真偽値
      * @return 真偽値がすべて<tt>true</tt>か
@@ -169,8 +197,8 @@ public class Checker {
     }
 
     /**
-     * 渡された単数～複数の真偽値のいずれかが<tt>true</tt>の場合に<tt>true</tt>を返します。
-     * 同時にNullチェックも行われます。
+     * 渡された単数～複数の真偽値のいずれかが<tt>true</tt>なら<tt>true</tt>を返します。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
      * @param booleans 単数～複数の真偽値
      * @return 真偽値のいずれかが<tt>true</tt>か
@@ -186,13 +214,67 @@ public class Checker {
     }
 
     /**
-     * <p>渡された<tt>CharSequence</tt>の長さが0の場合に<tt>true</tt>を返します。
-     * 同時にNullチェックも行われます。
+     * 渡された真偽値が<tt>true</tt>なら<tt>trueObject</tt>を返します。
+     * <tt>false</tt>なら<tt>null</tt>を返します。
+     *
+     * @param bool 真偽値
+     * @param trueObject <tt>true</tt>の場合に返すオブジェクト
+     * @param <R> 返すオブジェクトの型
+     * @return 真偽値が<tt>true</tt>なら<tt>trueObject</tt>、<tt>false</tt>なら<tt>null</tt>
+     */
+    public static <R> R caseTrue(boolean bool, R trueObject) {
+        return caseTrue(bool, trueObject, null);
+    }
+
+    /**
+     * 渡された真偽値が<tt>true</tt>なら<tt>trueObject</tt>を返します。
+     * <tt>false</tt>なら<tt>falseObject</tt>を返します。
+     *
+     * @param bool 真偽値
+     * @param trueObject <tt>true</tt>の場合に返すオブジェクト
+     * @param falseObject <tt>false</tt>の場合に返すオブジェクト
+     * @param <R> 返すオブジェクトの型
+     * @return 真偽値が<tt>true</tt>なら<tt>trueObject</tt>、<tt>false</tt>なら<tt>falseObject</tt>
+     */
+    public static <R> R caseTrue(boolean bool, R trueObject, R falseObject) {
+        return bool ? trueObject : falseObject;
+    }
+
+    /**
+     * 渡された真偽値が<tt>false</tt>なら<tt>falseObject</tt>を返します。
+     * <tt>true</tt>なら<tt>null</tt>を返します。
+     *
+     * @param bool 真偽値
+     * @param falseObject <tt>false</tt>の場合に返すオブジェクト
+     * @param <R> 返すオブジェクトの型
+     * @return 真偽値が<tt>false</tt>なら<tt>falseObject</tt>、<tt>true</tt>なら<tt>null</tt>
+     */
+    public static <R> R caseFalse(boolean bool, R falseObject) {
+        return caseTrue(bool, falseObject, null);
+    }
+
+    /**
+     * 渡された真偽値が<tt>false</tt>なら<tt>falseObject</tt>を返します。
+     * <tt>true</tt>なら<tt>trueObject</tt>を返します。
+     *
+     * @param bool 真偽値
+     * @param falseObject <tt>false</tt>の場合に返すオブジェクト
+     * @param trueObject <tt>true</tt>の場合に返すオブジェクト
+     * @param <R> 返すオブジェクトの型
+     * @return 真偽値が<tt>false</tt>なら<tt>falseObject</tt>、<tt>true</tt>なら<tt>trueObject</tt>
+     */
+    public static <R> R caseFalse(boolean bool, R falseObject, R trueObject) {
+        return !bool ? falseObject : trueObject;
+    }
+
+    /**
+     * <p>渡された<tt>CharSequence</tt>の長さが0なら<tt>true</tt>を返します。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
      * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
      * @param charSequence CharSequence
-     * @return charSequenceの長さが0であるか
+     * @return charSequenceの長さが0か
      */
     public static boolean isEmpty(CharSequence charSequence) {
         requireNonNull(charSequence);
@@ -200,8 +282,8 @@ public class Checker {
     }
 
     /**
-     * <p>渡された<tt>CharSequence</tt>の長さが0より大きい場合に<tt>true</tt>を返します。
-     * 同時にNullチェックも行われます。
+     * <p>渡された<tt>CharSequence</tt>の長さが0より大きいなら<tt>true</tt>を返します。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
      * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
@@ -215,7 +297,7 @@ public class Checker {
 
     /**
      * <p>渡された単数～複数の<tt>CharSequence</tt>の長さがすべて0より大きい場合に<tt>true</tt>を返します。
-     * 同時にNullチェックも行われます。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
      * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
@@ -234,14 +316,13 @@ public class Checker {
     }
 
     /**
-     * <p>渡された単数～複数の<tt>CharSequence</tt>の長さがいずれかが0より大きい場合に<tt>true</tt>を返します。
-     *
-     * <p>同時にNullチェックも行われます。
+     * <p>渡された単数～複数の<tt>CharSequence</tt>の最低1つの長さが0より大きい場合に<tt>true</tt>を返します。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
      * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
      * @param charSequences 単数～複数のCharSequence
-     * @return charSequenceのいずれかの長さが0より大きいか
+     * @return charSequenceの最低1つの長さが0より大きいか
      */
     public static boolean orNonEmpty(CharSequence... charSequences) {
         requireNonNull(charSequences);
@@ -255,15 +336,16 @@ public class Checker {
     }
 
     /**
-     * <p>渡された<tt>charSequence</tt>の長さが0の場合に<tt>IllegalArgumentException</tt>をスローします。
+     * <p>渡された<tt>charSequence</tt>の長さが0なら<tt>IllegalArgumentException</tt>をスローします。
      * <tt>IllegalArgumentException</tt>には何も渡されません。
      * 文字列を指定したい場合は、
      * {@link Checker#requireNonEmpty(CharSequence, String)}を用いてください。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
-     * <p>同時にNullチェックも行われます。
+     * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
      * @param charSequence CharSequence
-     * @throws IllegalArgumentException CharSequenceの長さが0の場合にスロー
+     * @throws IllegalArgumentException CharSequenceの長さが0ならスロー
      */
     public static void requireNonEmpty(CharSequence charSequence) {
         if (isEmpty(charSequence))
@@ -272,12 +354,13 @@ public class Checker {
 
     /**
      * <p>渡された<tt>charSequence</tt>の長さが0の場合に、
-     * 渡された文字列を渡した<tt>IllegalArgumentException</tt>をスローします。
+     * 受け取った文字列<tt>message</tt>を渡した<tt>IllegalArgumentException</tt>をスローします。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
-     * <p>同時にNullチェックも行われます。
+     * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
      * @param charSequence CharSequence
-     * @param message <tt>IllegalArgumentException</tt>に渡すオブジェクト
+     * @param message <tt>IllegalArgumentException</tt>に渡す文字列
      * @throws IllegalArgumentException CharSequenceの長さが0の場合にスロー
      */
     public static void requireNonEmpty(CharSequence charSequence, String message) {
@@ -287,17 +370,16 @@ public class Checker {
     }
 
     /**
-     * <p>渡された単数～複数の<tt>CharSequence</tt>のいずれかの長さが0の場合に、
+     * <p>渡された単数～複数の<tt>CharSequence</tt>のいずれかの長さが0なら、
      * <tt>IllegalArgumentException</tt>をスローします。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
      * <p>このメソッドはすべての<tt>CharSequence</tt>の長さが0より大きいことを保証するためのメソッドです。
-     *
-     * <p>同時にNullチェックも行われます。
      *
      * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
      * @param charSequences 単数～複数のCharSequence
-     * @throws IllegalArgumentException CharSequenceのいずれかの長さが0の場合にスロー
+     * @throws IllegalArgumentException CharSequenceのいずれかの長さが0ならスロー
      */
     public static void requireAndNonEmpty(CharSequence... charSequences) {
         requireNonNull(charSequences);
@@ -310,17 +392,16 @@ public class Checker {
     }
 
     /**
-     * <p>渡された単数～複数の<tt>CharSequence</tt>の長さがすべて0の場合に、
+     * <p>渡された単数～複数の<tt>CharSequence</tt>の長さがすべて0なら、
      * <tt>IllegalArgumentException</tt>をスローします。
+     * 同時に<tt>null</tt>チェックも行われます。
      *
-     * <p>このメソッドは最低ひとつの<tt>CharSequence</tt>の長さが0より大きいことを保証するためのメソッドです。
-     *
-     * <p>同時にNullチェックも行われます。
+     * <p>このメソッドは最低1つの<tt>CharSequence</tt>の長さが0より大きいことを保証するためのメソッドです。
      *
      * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
      *
      * @param charSequences 単数～複数のCharSequence
-     * @throws IllegalArgumentException CharSequenceのすべての長さが0の場合にスロー
+     * @throws IllegalArgumentException CharSequenceのすべての長さが0なら
      */
     public static void requireOrNonEmpty(CharSequence... charSequences) {
         requireNonNull(charSequences);
