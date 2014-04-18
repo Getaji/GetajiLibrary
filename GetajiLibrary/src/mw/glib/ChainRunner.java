@@ -312,50 +312,102 @@ public class ChainRunner {
         return this;
     }
 
+    /**
+     * 関数の実行前に呼び出されるObserverのリストを返します。
+     *
+     * @return 実行前Observerのリスト
+     */
     public List<BiConsumer<Function<Object, Boolean>, Object>>
     getBeforeRunningObservers() {
         return beforeRunningObservers;
     }
 
+    /**
+     * 関数の実行前に呼び出されるObserverを追加します。
+     *
+     * @param observer 実行前Observer
+     * @return 自身のインスタンス
+     */
     public ChainRunner addBeforeRunningObserver(
             BiConsumer<Function<Object, Boolean>, Object> observer) {
         beforeRunningObservers.add(observer);
         return this;
     }
 
+    /**
+     * 指定した実行前Observerを削除します。
+     *
+     * @param observer 実行前Observer
+     * @return 自身のインスタンス
+     */
     public ChainRunner removeBeforeRunningObserver(
             BiConsumer<Function<Object, Boolean>, Object> observer) {
         beforeRunningObservers.remove(observer);
         return this;
     }
 
+    /**
+     * すべての実行前Observerを削除します。
+     *
+     * @return 自身のインスタンス
+     */
     public ChainRunner removeAllBeforeRunningObserver() {
         beforeRunningObservers.clear();
         return this;
     }
 
+    /**
+     * 関数の実行後に呼び出されるObserverのリストを返します。
+     *
+     * @return 実行後Observerのリスト
+     */
     public List<BiConsumer<Function<Object, Boolean>, Object>>
     getAfterRunningObservers() {
         return afterRunningObservers;
     }
 
+    /**
+     * 関数の実行後に呼び出されるObserverを追加します。
+     *
+     * @param observer 実行後Observer
+     * @return 自身のインスタンス
+     */
     public ChainRunner addAfterRunningObserver(
             BiConsumer<Function<Object, Boolean>, Object> observer) {
         afterRunningObservers.add(observer);
         return this;
     }
 
+    /**
+     * 指定した実行後Observerを削除します。
+     *
+     * @param observer 実行後Observer
+     * @return 自身のインスタンス
+     */
     public ChainRunner removeAfterRunningObserver(
             BiConsumer<Function<Object, Boolean>, Object> observer) {
         afterRunningObservers.remove(observer);
         return this;
     }
 
+    /**
+     * すべての実行後Observerを削除します。
+     *
+     * @return 自身のインスタンス
+     */
     public ChainRunner removeAllAfterRunningObserver() {
         afterRunningObservers.clear();
         return this;
     }
 
+    /**
+     * 関数の実行前に呼び出されるObserverをコールします。
+     * このメソッドはChainRunner内部のみから呼び出されることを考慮しています。
+     *
+     * @param function 実行する関数
+     * @param param 関数に渡されるパラメータ
+     * @return 自身のインスタンス
+     */
     public ChainRunner onBeforeRunning(Function<Object, Boolean> function, Object param) {
         for (BiConsumer<Function<Object, Boolean>, Object> consumer : beforeRunningObservers) {
             consumer.accept(function, param);
@@ -363,6 +415,14 @@ public class ChainRunner {
         return this;
     }
 
+    /**
+     * 関数の実行後に呼び出されるObserverをコールします。
+     * このメソッドはChainRunner内部のみから呼び出されることを考慮しています。
+     *
+     * @param function 実行された関数
+     * @param param 関数に渡されたパラメータ
+     * @return 自身のインスタンス
+     */
     public ChainRunner onAfterRunning(Function<Object, Boolean> function, Object param) {
         for (BiConsumer<Function<Object, Boolean>, Object> consumer : afterRunningObservers) {
             consumer.accept(function, param);
