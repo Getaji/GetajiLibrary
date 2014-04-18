@@ -20,3 +20,6 @@ GUIデザインパターンのひとつ、Model-View-Controllerを抽象化し�
 * [Checker](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/Checker.java)
 * [EntryImpl](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/EntryImpl.java)
 * [Thrower](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/Thrower.java)
+* [ChainRunner](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/ChainRunner.java)
+* [TriConsumer](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/TriConsumer.java)
+* [TriFunction](https://github.com/Getaji/GetajiLibrary/blob/master/GetajiLibrary/src/mw/glib/TriFunction.java)
