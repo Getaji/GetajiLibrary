@@ -402,7 +402,6 @@ public class ChainRunner {
 
     /**
      * 関数の実行前に呼び出されるObserverをコールします。
-     * このメソッドはChainRunner内部のみから呼び出されることを考慮しています。
      *
      * @param function 実行する関数
      * @param param 関数に渡されるパラメータ
@@ -417,7 +416,6 @@ public class ChainRunner {
 
     /**
      * 関数の実行後に呼び出されるObserverをコールします。
-     * このメソッドはChainRunner内部のみから呼び出されることを考慮しています。
      *
      * @param function 実行された関数
      * @param param 関数に渡されたパラメータ
