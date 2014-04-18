@@ -3,12 +3,13 @@ package mw.glib;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
- * 関数を順番に、trueか例外が返らない限り連鎖的に実行し続けるクラスです。
+ * 関数を順番に、falseか例外が返る限り連鎖的に実行し続けるクラスです。
  * 実行時にオブジェクトを渡すこともでき、渡し方は{@link ParamPassType}を利用します。
+ * また、関数の実行前と実行後にそれぞれセットされたイベントリスナを呼び出します。
  *
  * @author Getaji
  */
@@ -23,9 +24,9 @@ public class ChainRunner {
          * オブジェクトを渡しません。すべてnullを渡します。
          * 一度だけ実行します。
          */
-        NONE((funcList, objList) -> {
+        NONE((funcList, objList, runner) -> {
             for (Function<Object, Boolean> function : funcList) {
-                if (function.apply(null)) {
+                if (process(function, null, runner)) {
                     return true;
                 }
             }
@@ -36,10 +37,10 @@ public class ChainRunner {
          * オブジェクトリストの最初のオブジェクトだけを使います。
          * 一度だけ実行します。
          */
-        ONCE_FIRST((funcList, objList) -> {
+        ONCE_FIRST((funcList, objList, runner) -> {
             Object giveObj = objList.size() == 0 ? null: objList.get(0);
             for (Function<Object, Boolean> function : funcList) {
-                if (function.apply(giveObj)) {
+                if (process(function, giveObj, runner)) {
                     return true;
                 }
             }
@@ -50,10 +51,10 @@ public class ChainRunner {
          * オブジェクトリストの最後のオブジェクトだけを使います。
          * 一度だけ実行します。
          */
-        ONCE_LAST((funcList, objList) -> {
+        ONCE_LAST((funcList, objList, runner) -> {
             Object giveObj = objList.size() == 0 ? null: objList.get(objList.size() - 1);
             for (Function<Object, Boolean> function : funcList) {
-                if (function.apply(giveObj)) {
+                if (process(function, giveObj, runner)) {
                     return true;
                 }
             }
@@ -63,10 +64,10 @@ public class ChainRunner {
         /**
          * すべてのオブジェクトのぶん実行します。
          */
-        SAME((funcList, objList) -> {
+        SAME((funcList, objList, runner) -> {
             for (Object object : objList) {
                 for (Function<Object, Boolean> function : funcList) {
-                    if (function.apply(object)) {
+                    if (process(function, object, runner)) {
                         return true;
                     }
                 }
@@ -78,10 +79,10 @@ public class ChainRunner {
          * 保持するオブジェクトの先頭からそれぞれひとつのメソッドに渡します。
          * 余ったオブジェクトは切り捨てられ、足りない場合はnullが渡されます。
          */
-        EACH((funcList, objList) -> {
+        EACH((funcList, objList, runner) -> {
             for (int i = 0; i < funcList.size(); ++i) {
-                Object giveObj = objList.size() < i ? objList.get(i) : null;
-                if (funcList.get(i).apply(giveObj)) {
+                Object giveObj = objList.size() <= i ? null : objList.get(i);
+                if (process(funcList.get(i), giveObj, runner)) {
                     return true;
                 }
             }
@@ -90,11 +91,25 @@ public class ChainRunner {
 
         /**
          * 保持するオブジェクトの先頭からそれぞれひとつのメソッドに渡します。
-         * 余ったオブジェクトは切り捨てられ、足りない場合はその時点で終了します。
+         * オブジェクトの分実行され、足りない場合はその時点でfalseを返し終了します。
          */
-        EACH_CUT((funcList, objList) -> {
+        EACH_CUT((funcList, objList, runner) -> {
             for (int i = 0; i < objList.size(); ++i) {
-                if (funcList.get(i).apply(objList.get(i))) {
+                if (funcList.size() - 1 < i) return false;
+                if (process(funcList.get(i), objList.get(i), runner)) {
+                    return true;
+                }
+            }
+            return false;
+        }),
+
+        /**
+         * オブジェクトのリストをそのまま引数として渡します。
+         * 一度だけ実行します。
+         */
+        DIRECT((funcList, objList, runner) -> {
+            for (Function<Object, Boolean> function : funcList) {
+                if (process(function, funcList, runner)) {
                     return true;
                 }
             }
@@ -102,26 +117,52 @@ public class ChainRunner {
         }),
         ;
 
-        private final BiFunction<List<Function<Object, Boolean>>,
-                List<Object>, Boolean> runnerRunner;
+        /**
+         * ChainRunnerを実行する関数を管理
+         */
+        private final TriFunction<List<Function<Object, Boolean>>,
+                List<Object>, ChainRunner, Boolean> runnerRunner;
 
-        private ParamPassType(BiFunction<List<Function<Object, Boolean>>,
-                List<Object>, Boolean> runnerRunner) {
+        private ParamPassType(TriFunction<List<Function<Object, Boolean>>,
+                List<Object>, ChainRunner, Boolean> runnerRunner) {
             this.runnerRunner = runnerRunner;
         }
 
-        public boolean run(ChainRunner runner) {
+        /**
+         * 関数を実行します。例外が発生した場合はfalseを返します。
+         *
+         * @param function 実行する関数
+         * @param param 渡すオブジェクト
+         * @return 結果
+         */
+        private static boolean process(Function<Object, Boolean> function, Object param, ChainRunner runner) {
+            boolean result;
+            runner.onBeforeRunning(function, param);
             try {
-                return runnerRunner.apply(runner.functionList, runner.getObjectList());
+                result = function.apply(param);
             } catch (Exception e) {
-                return false;
+                result = false;
             }
+            runner.onAfterRunning(function, param);
+            return result;
+        }
+
+        /**
+         * ChainRunnerを受け取って実行します。
+         *
+         * @param runner ChainRunner
+         * @return 結果
+         */
+        public boolean run(ChainRunner runner) {
+            return runnerRunner.apply(runner.functionList, runner.getObjectList(), runner);
         }
     }
 
     private final List<Function<Object, Boolean>> functionList = new LinkedList<>();
     private final List<Object> objectList = new LinkedList<>();
     private ParamPassType paramPassType = ParamPassType.NONE;
+    private final List<BiConsumer<Function<Object, Boolean>, Object>> beforeRunningObservers = new LinkedList<>();
+    private final List<BiConsumer<Function<Object, Boolean>, Object>> afterRunningObservers = new LinkedList<>();
 
     /**
      * ChainRunnerを生成します。
@@ -145,8 +186,9 @@ public class ChainRunner {
      *
      * @param function 関数
      */
-    public void addFunc(Function<Object, Boolean> function) {
+    public ChainRunner addFunc(Function<Object, Boolean> function) {
         functionList.add(function);
+        return this;
     }
 
     /**
@@ -154,8 +196,9 @@ public class ChainRunner {
      *
      * @param functions 複数の関数のコレクション
      */
-    public void addAllFunc(Collection<Function<Object, Boolean>> functions) {
+    public ChainRunner addAllFunc(Collection<Function<Object, Boolean>> functions) {
         functionList.addAll(functions);
+        return this;
     }
 
     /**
@@ -164,8 +207,9 @@ public class ChainRunner {
      * @param function 関数
      * @param index 追加する位置
      */
-    public void addFuncAt(Function<Object, Boolean> function, int index) {
+    public ChainRunner addFuncAt(Function<Object, Boolean> function, int index) {
         functionList.add(index, function);
+        return this;
     }
 
     /**
@@ -174,8 +218,9 @@ public class ChainRunner {
      * @param functions 複数の関数のコレクション
      * @param index 追加する位置
      */
-    public void addAllFuncAt(Collection<Function<Object, Boolean>> functions, int index) {
+    public ChainRunner addAllFuncAt(Collection<Function<Object, Boolean>> functions, int index) {
         functionList.addAll(index, functions);
+        return this;
     }
 
     /**
@@ -183,8 +228,9 @@ public class ChainRunner {
      *
      * @param obj オブジェクト
      */
-    public void addObject(Object obj) {
+    public ChainRunner addObject(Object obj) {
         objectList.add(obj);
+        return this;
     }
 
     /**
@@ -192,8 +238,9 @@ public class ChainRunner {
      *
      * @param objects 複数のオブジェクトのコレクション
      */
-    public void addAllObject(Collection<Object> objects) {
+    public ChainRunner addAllObject(Collection<Object> objects) {
         objectList.addAll(objectList);
+        return this;
     }
 
     /**
@@ -202,8 +249,9 @@ public class ChainRunner {
      * @param obj オブジェクト
      * @param index 追加する位置
      */
-    public void addObjectAt(Object obj, int index) {
+    public ChainRunner addObjectAt(Object obj, int index) {
         objectList.add(index, obj);
+        return this;
     }
 
     /**
@@ -212,8 +260,9 @@ public class ChainRunner {
      * @param objects 複数のオブジェクトのコレクション
      * @param index 追加する位置
      */
-    public void addAllObject(Collection<Object> objects, int index) {
+    public ChainRunner addAllObject(Collection<Object> objects, int index) {
         objectList.addAll(index, objectList);
+        return this;
     }
 
     /**
@@ -258,7 +307,66 @@ public class ChainRunner {
      *
      * @param paramPassType オブジェクトの渡し方
      */
-    public void setParamPassType(ParamPassType paramPassType) {
+    public ChainRunner setParamPassType(ParamPassType paramPassType) {
         this.paramPassType = paramPassType;
+        return this;
+    }
+
+    public List<BiConsumer<Function<Object, Boolean>, Object>>
+    getBeforeRunningObservers() {
+        return beforeRunningObservers;
+    }
+
+    public ChainRunner addBeforeRunningObserver(
+            BiConsumer<Function<Object, Boolean>, Object> observer) {
+        beforeRunningObservers.add(observer);
+        return this;
+    }
+
+    public ChainRunner removeBeforeRunningObserver(
+            BiConsumer<Function<Object, Boolean>, Object> observer) {
+        beforeRunningObservers.remove(observer);
+        return this;
+    }
+
+    public ChainRunner removeAllBeforeRunningObserver() {
+        beforeRunningObservers.clear();
+        return this;
+    }
+
+    public List<BiConsumer<Function<Object, Boolean>, Object>>
+    getAfterRunningObservers() {
+        return afterRunningObservers;
+    }
+
+    public ChainRunner addAfterRunningObserver(
+            BiConsumer<Function<Object, Boolean>, Object> observer) {
+        afterRunningObservers.add(observer);
+        return this;
+    }
+
+    public ChainRunner removeAfterRunningObserver(
+            BiConsumer<Function<Object, Boolean>, Object> observer) {
+        afterRunningObservers.remove(observer);
+        return this;
+    }
+
+    public ChainRunner removeAllAfterRunningObserver() {
+        afterRunningObservers.clear();
+        return this;
+    }
+
+    public ChainRunner onBeforeRunning(Function<Object, Boolean> function, Object param) {
+        for (BiConsumer<Function<Object, Boolean>, Object> consumer : beforeRunningObservers) {
+            consumer.accept(function, param);
+        }
+        return this;
+    }
+
+    public ChainRunner onAfterRunning(Function<Object, Boolean> function, Object param) {
+        for (BiConsumer<Function<Object, Boolean>, Object> consumer : afterRunningObservers) {
+            consumer.accept(function, param);
+        }
+        return this;
     }
 }
