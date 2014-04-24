@@ -141,7 +141,7 @@ public class LocalizeManager {
     }
 
     /**
-     * 現在の地域を返します。
+     * <tt>CurrentLocation</tt>(現在の地域)を返します。
      *
      * @return 現在の地域
      */
@@ -156,7 +156,7 @@ public class LocalizeManager {
      * @param location <tt>CurrentLocation</tt>(現在の地域)
      * @throws LocalizeException 地域が登録されていない場合にスロー
      */
-    public void setCurrentLocation(Location location) throws LocalizeException{
+    public void setCurrentLocation(Location location) throws LocalizeException {
         Checker.requireNonNull(location);
 
         if (!isRegisteredLocation(location)) {
@@ -166,7 +166,29 @@ public class LocalizeManager {
         }
     }
 
+    /**
+     * <p><tt>CurrentLocation</tt>(現在の地域)をもとにローカライズされたテキストを返します。
+     *
+     * <p>このメソッドは冗長なメソッド名のため非推奨となりました。
+     * 同機能の{@link LocalizeManager#getLocalizedText(String)}を利用してください。
+     *
+     * @param unLocalizedText 未翻訳テキスト
+     * @return ローカライズ（翻訳）テキスト
+     */
+    @Deprecated
     public String getLocalizedTextWithCurrentLocation(String unLocalizedText) {
+        Checker.requireNonNull(unLocalizedText);
+
+        return localizedMap.get(currentLocation).get(unLocalizedText);
+    }
+
+    /**
+     * <tt>CurrentLocation</tt>(現在の地域)をもとにローカライズされたテキストを返します。
+     *
+     * @param unLocalizedText 未翻訳テキスト
+     * @return ローカライズ（翻訳）テキスト
+     */
+    public String getLocalizedText(String unLocalizedText) {
         Checker.requireNonNull(unLocalizedText);
 
         return localizedMap.get(currentLocation).get(unLocalizedText);
