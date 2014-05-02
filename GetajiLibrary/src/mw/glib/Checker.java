@@ -1,5 +1,8 @@
 package mw.glib;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>オブジェクトの検査を行うクラスです。
  *
@@ -448,5 +451,105 @@ public class Checker {
      */
     public static boolean isMinus(double d) {
         return d < 0;
+    }
+
+    /**
+     * インデックスが配列の範囲外の場合に<tt>true</tt>を返します。
+     *
+     * @param array 配列
+     * @param index インデックス
+     * @param <T> 型
+     * @return 範囲外か
+     */
+    public static <T> boolean isIndexOutOfBounds(T[] array, int index) {
+        requireNonNull(array);
+        return isMinus(index) || array.length <= index;
+    }
+
+    /**
+     * <p>インデックスがCharSequenceの範囲外の場合に<tt>true</tt>を返します。
+     *
+     * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
+     *
+     * @param charSequence CharSequence
+     * @param index インデックス
+     * @return 範囲外か
+     */
+    public static boolean isIndexOutOfBounds(CharSequence charSequence, int index) {
+        requireNonNull(charSequence);
+        return isMinus(index) || charSequence.length() <= index;
+    }
+
+    /**
+     * インデックスが{@link List}の範囲外の場合に<tt>true</tt>を返します。
+     *
+     * @param list List
+     * @param index インデックス
+     * @param <E> 型
+     * @return 範囲外か
+     */
+    public static <E> boolean isIndexOutOfBounds(List<E> list, int index) {
+        requireNonNull(list);
+        return isMinus(index) || list.size() <= index;
+    }
+
+    /**
+     * インデックスが{@link Map}の範囲外の場合に<tt>true</tt>を返します。
+     *
+     * @param map Map
+     * @param index インデックス
+     * @param <K> キーの型
+     * @param <V> 値の型
+     * @return 範囲外か
+     */
+    public static <K, V> boolean isIndexOutOfBounds(Map<K, V> map, int index) {
+        requireNonNull(map);
+        return isMinus(index) || map.size() <= index;
+    }
+
+    /**
+     * インデックスが配列の範囲外の場合に{@link ArrayIndexOutOfBoundsException}をスローします。
+     *
+     * @param array 配列
+     * @param index インデックス
+     * @param <T> 型
+     */
+    public static <T> void requireIndexInTheRange(T[] array, int index) {
+        if (isIndexOutOfBounds(array, index)) Thrower.throwAIOOBE();
+    }
+
+    /**
+     * <p>インデックスが{@link CharSequence}の範囲外の場合に{@link ArrayIndexOutOfBoundsException}をスローします。
+     *　
+     * <p>{@link CharSequence}は{@link String}や{@link AbstractStringBuilder}が実装するインターフェースです。
+     *
+     * @param charSequence CharSequence
+     * @param index インデックス
+     */
+    public static void requireIndexInTheRange(CharSequence charSequence, int index) {
+        if (isIndexOutOfBounds(charSequence, index)) Thrower.throwAIOOBE();
+    }
+
+    /**
+     * インデックスが{@link List}の範囲外の場合に{@link ArrayIndexOutOfBoundsException}をスローします。
+     *
+     * @param list List
+     * @param index インデックス
+     * @param <E> 型
+     */
+    public static <E> void requireIndexInTheRange(List<E> list, int index) {
+        if (isIndexOutOfBounds(list, index)) Thrower.throwAIOOBE();
+    }
+
+    /**
+     * インデックスが{@link Map}の範囲外の場合に{@link ArrayIndexOutOfBoundsException}をスローします。
+     *
+     * @param map Map
+     * @param index インデックス
+     * @param <K> キーの型
+     * @param <V> 値の型
+     */
+    public static <K, V> void requireIndexInTheRange(Map<K, V> map, int index) {
+        if (isIndexOutOfBounds(map, index)) Thrower.throwAIOOBE();
     }
 }
