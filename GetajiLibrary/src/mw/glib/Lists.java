@@ -24,6 +24,16 @@ public class Lists {
     }
 
     /**
+     * 指定した初期サイズの{@link ArrayList}を生成して返します。
+     *
+     * @param <E> 型
+     * @return 空のArrayList
+     */
+    public static <E> ArrayList<E> newArrayList(int initialCapacity) {
+        return new ArrayList<>(initialCapacity);
+    }
+
+    /**
      * 空の{@link LinkedList}を生成して返します。
      *
      * @param <E> 型
@@ -41,7 +51,7 @@ public class Lists {
      * @return 中身の入ったArrayList
      */
     public static <E> ArrayList<E> newArrayListWithItems(int size) {
-        ArrayList<E> list = newArrayList();
+        ArrayList<E> list = newArrayList(size);
         for (int i = 0; i < size; ++i)
             list.add(null);
         return list;
@@ -56,7 +66,7 @@ public class Lists {
      * @return 中身の入ったArrayList
      */
     public static <E> ArrayList<E> newArrayListWithItems(int size, E item) {
-        ArrayList<E> list = newArrayList();
+        ArrayList<E> list = newArrayList(size);
         for (int i = 0; i < size; ++i)
             list.add(item);
         return list;
