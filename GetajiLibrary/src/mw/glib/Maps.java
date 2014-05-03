@@ -107,4 +107,24 @@ public class Maps {
             action.accept(i, iterator.next());
         }
     }
+
+    /**
+     * 文字列を{@link Map}に変換します。
+     * 例えば、"name=tom,age=10"という文字列、keySplitterに"="、entrySplitterに"="を指定すると、
+     * Mapには"name":"tom", "age":"10"という文字列のペアが格納されます。
+     *
+     * @param str 分割する文字列
+     * @param keySplitter キーと値の分割文字 正規表現
+     * @param entrySplitter ペア(Entry)の分割文字 正規表現
+     * @return 結果
+     */
+    public static Map<String, String> stringToMap(String str, String keySplitter, String entrySplitter) {
+        final String[] entries = str.split(entrySplitter);
+        final Map<String, String> map = new HashMap<>();
+        for (String entry : entries) {
+            String[] kv = entry.split(keySplitter, 2);
+            map.put(kv[0], kv[1]);
+        }
+        return map;
+    }
 }
