@@ -80,7 +80,7 @@ public class LocalizeManager {
             throw new LocalizeException("Contains this location : " + location.getLocateName());
         } else {
             locationMap.put(location.getLocateName(), location);
-            localizedMap.put(location, new HashMap<String, String>());
+            localizedMap.put(location, new HashMap<>());
         }
     }
 

@@ -140,4 +140,18 @@ public class Lists {
             action.accept(i, list.get(i));
         }
     }
+
+    /**
+     * Listに入っているアイテムをインデックスと一緒にひとつずつ、受け取った関数に渡します。
+     *
+     * @param list 回すList
+     * @param action 処理する関数
+     * @param <E> 型
+     */
+    public static <E> void forEachReverce(List<E> list, BiConsumer<Integer, E> action) {
+        Checker.requireAndNonNull(list, action);
+        for (int i = 0; i < list.size(); ++i) {
+            action.accept(i, list.get(i));
+        }
+    }
 }

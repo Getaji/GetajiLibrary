@@ -2,8 +2,6 @@ package mw.glib;
 
 import java.util.Map;
 
-import static mw.glib.SyntaxSugar.not;
-
 /**
  * 値のスイッチ（切り替え）を行うクラスです。
  * 値の初期値は<tt>null</tt>で、最初に追加された値が自動でセットされます。
@@ -35,7 +33,7 @@ public class Switcher<K, V> {
      */
     public void switching(K key) {
         Checker.requireNonNull(key);
-        if (not(values.containsKey(key))) {
+        if (SyntaxSugar.not(values.containsKey(key))) {
             Thrower.throwIllegalAugmentException();
         }
         currentValue = values.get(key);
