@@ -1,5 +1,6 @@
 package mw.glib;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ public class StringProcessor {
      * 配列の要素をcharacterで区切って結合し、文字列として返します。
      *
      * @param character 区切り文字
-     * @param list 対象リスト
+     * @param list 対象配列
      * @return 結合結果
      */
     public static String join(String character, Object... list) {
@@ -32,6 +33,30 @@ public class StringProcessor {
                 builder.append(character);
             }
             builder.append(list[list.length - 1]);
+            return builder.toString();
+        }
+    }
+
+    /**
+     * {@link List}の要素をcharacterで区切って結合し、文字列として返します。
+     *
+     * @param character 区切り文字
+     * @param list 対象リスト
+     * @return 結合結果
+     */
+    public static String join(String character, List<?> list) {
+        Checker.requireNonNull(character);
+        Checker.requireAndNonNull(list);
+
+        if (list.size() <= 0) {
+            return "";
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < list.size() - 1; ++i) {
+                builder.append(list.get(i));
+                builder.append(character);
+            }
+            builder.append(list.get(list.size() - 1));
             return builder.toString();
         }
     }
